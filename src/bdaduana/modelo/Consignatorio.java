@@ -1,10 +1,8 @@
 package bdaduana.modelo;
 
-import java.text.DecimalFormat;
+import bdaduana.Formatos;
 
 public class Consignatorio {
-    private static final DecimalFormat FORMATO_CONSIGNATORIO = new DecimalFormat("0000");
-
     private String orden;
     private String consignatario;
     private int ruc;
@@ -75,9 +73,9 @@ public class Consignatorio {
     }
 
     public Object[] registrarNuevo(int num) {
-        orden = FORMATO_CONSIGNATORIO.format(num) + "-2023";
+        orden = Formatos.CONSIGNATORIO.format(num) + "-2023";
 
-        Object[] fila = {orden, consignatario, ruc, estado, canal, nave, almacen};
+        Object[] fila = { orden, consignatario, ruc, estado, canal, nave, almacen };
         return fila;
     }
 }

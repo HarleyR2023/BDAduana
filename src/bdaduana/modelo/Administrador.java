@@ -1,16 +1,15 @@
 package bdaduana.modelo;
 
-import java.text.DecimalFormat;
+import bdaduana.Formatos;
 
 public class Administrador extends Trabajador {
-    private static final DecimalFormat FORMATO_ADMIN = new DecimalFormat("ADM0000");
     private static int contador = 0;
     
     private final String codigo;
     
     public Administrador() {
         contador++;
-        this.codigo = FORMATO_ADMIN.format(contador);
+        this.codigo = Formatos.ADMIN.format(contador);
     }
     
     public Object[] registrarNuevo() {

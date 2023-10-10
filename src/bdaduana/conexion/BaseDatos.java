@@ -18,6 +18,9 @@ public class BaseDatos {
         this(BDAUANA_URL);
     }
     
+    /*
+        ** Este método solo se utilizará en el Main para crear la conexión.
+    */
     public void crearConexion() {
         if (conexion == null) {
             try {
@@ -31,6 +34,10 @@ public class BaseDatos {
         }
     }
     
+    /*
+        ** Utilizado para consultas que recupera datos del base de datos, como 'select'.
+        ** Retorna un ResultSet opcional, utiliza el método 'get'.
+    */
     public Optional<ResultSet> ejecutarQuery(String sqlCodigo) {
         try {
             PreparedStatement consulta = conexion.prepareStatement(sqlCodigo);
@@ -42,6 +49,11 @@ public class BaseDatos {
         }
     }
     
+    
+    /*
+        ** Utilizado para consultas que modifica el base de datos, como 'insert', 'update', y 'delete'.
+        ** Retorna la cantidad de filas afectadas por el código SQL.
+    */
     public int ejecutarUpdate(String sqlCodigo) {
         try {
             PreparedStatement consulta = conexion.prepareStatement(sqlCodigo);

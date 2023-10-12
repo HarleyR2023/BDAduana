@@ -5,6 +5,7 @@ import java.util.Optional;
 import javax.swing.JOptionPane;
 
 public class BaseDatos {
+    public static final BaseDatos INSTANCE = new BaseDatos(); 
     private static final String BDAUANA_URL = "jdbc:mysql://localhost:3306/BDAduana";
     
     private Connection conexion = null;
@@ -30,7 +31,7 @@ public class BaseDatos {
                 JOptionPane.showMessageDialog(null, "Error: No se pudo establecer la conexión a la BD! \n" + error);
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Error: La conexión ya está establecido!");
+            JOptionPane.showMessageDialog(null, "Error: La conexión ya está establecida!");
         }
     }
     
@@ -40,8 +41,8 @@ public class BaseDatos {
     */
     public Optional<ResultSet> ejecutarQuery(String sqlCodigo) {
         try {
-            PreparedStatement consulta = conexion.prepareStatement(sqlCodigo);
-            return Optional.of(consulta.executeQuery());
+            Statement consulta = conexion.createStatement();
+            return Optional.of(consulta.executeQuery(sqlCodigo));
         }
         catch (SQLException error) {
             JOptionPane.showMessageDialog(null, "Error: No se pudo ejectuar el código SQL \n" + error.getMessage());
@@ -49,15 +50,14 @@ public class BaseDatos {
         }
     }
     
-    
     /*
         ** Utilizado para consultas que modifica el base de datos, como 'insert', 'update', y 'delete'.
         ** Retorna la cantidad de filas afectadas por el código SQL.
     */
     public int ejecutarUpdate(String sqlCodigo) {
         try {
-            PreparedStatement consulta = conexion.prepareStatement(sqlCodigo);
-            return consulta.executeUpdate();
+            Statement consulta = conexion.createStatement();
+            return consulta.executeUpdate(sqlCodigo);
         }
         catch (SQLException error) {
             JOptionPane.showMessageDialog(null, "Error: No se pudo ejectuar el código SQL \n" + error);

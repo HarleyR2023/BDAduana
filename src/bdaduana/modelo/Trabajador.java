@@ -3,7 +3,7 @@ package bdaduana.modelo;
 public class Trabajador {
     private String nombre;
     private String apellido;
-    private String contraseña;
+    private String contraseña;    
     private String usuario;
     private String correo;
 

@@ -37,7 +37,7 @@ public class ControladorRegistro implements ActionListener, MouseListener {
         String contraseña = String.valueOf(pantalla.txtPass.getPassword());
         
         try {
-            String codigoSQL = "insert into usuarios values (?, ?, ?, ?)";
+            String codigoSQL = "insert into empleado () values (?, ?, ?, ?)";
             PreparedStatement consulta = BaseDatos.INSTANCE.getConexion().prepareStatement(codigoSQL);
             
             consulta.setString(1, nombre);

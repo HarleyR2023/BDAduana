@@ -34,6 +34,10 @@ public class BaseDatos {
         }
     }
     
+    public Connection getConexion() {
+        return this.conexion;
+    }
+    
     /*
         ** Utilizado para consultas que recupera datos del base de datos, como 'select'.
         ** Retorna un ResultSet opcional, utiliza el método 'get'.

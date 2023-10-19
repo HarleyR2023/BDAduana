@@ -5,6 +5,7 @@ public class Trabajador {
     private String apellido;
     private String contraseña;
     private String usuario;
+    private String correo;
 
     public Trabajador() {
 
@@ -40,5 +41,13 @@ public class Trabajador {
 
     public void setUsuario(String usuario) {
         this.usuario = usuario;
+    }
+    
+    public String getCorreo() {
+        return correo;
+    }
+    
+    public void setCorreo(String correo) {
+        this.correo = correo;
     }
 }

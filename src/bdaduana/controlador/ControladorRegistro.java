@@ -1,6 +1,6 @@
 package bdaduana.controlador;
 
-import bdaduana.Principal;
+import bdaduana.conexion.BaseDatos;
 import bdaduana.vista.PantallaLogin;
 import bdaduana.vista.PantallaRegistro;
 import java.awt.event.ActionEvent;
@@ -38,7 +38,7 @@ public class ControladorRegistro implements ActionListener, MouseListener {
         
         try {
             String codigoSQL = "insert into usuarios values (?, ?, ?, ?)";
-            PreparedStatement consulta = Principal.CONEXION_BD.getConexion().prepareStatement(codigoSQL);
+            PreparedStatement consulta = BaseDatos.INSTANCE.getConexion().prepareStatement(codigoSQL);
             
             consulta.setString(1, nombre);
             consulta.setString(2, dni);

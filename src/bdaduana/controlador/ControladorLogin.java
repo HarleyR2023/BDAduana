@@ -1,6 +1,6 @@
 package bdaduana.controlador;
 
-import static bdaduana.Principal.CONEXION_BD;
+import bdaduana.conexion.BaseDatos;
 import bdaduana.vista.PantallaLogin;
 import bdaduana.vista.PantallaRegistro;
 import java.awt.event.ActionEvent;
@@ -32,7 +32,7 @@ public class ControladorLogin implements ActionListener, MouseListener {
     public boolean login(String correo, String contraseña) {
         try {
             String codigoSQL = "select from * where Usuarios where correo = ? and contraseña = ?";
-            PreparedStatement consulta = CONEXION_BD.getConexion().prepareStatement(codigoSQL);
+            PreparedStatement consulta = BaseDatos.INSTANCE.getConexion().prepareStatement(codigoSQL);
             consulta.setString(1, correo);
             consulta.setString(2, contraseña);
             

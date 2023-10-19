@@ -31,7 +31,7 @@ public class ControladorLogin implements ActionListener, MouseListener {
     
     public boolean login(String correo, String contraseña) {
         try {
-            String codigoSQL = "select from * where Usuarios where correo = ? and contraseña = ?";
+            String codigoSQL = "select from * where Usuarios where Correo = ? and Contraseña = ?";
             PreparedStatement consulta = BaseDatos.INSTANCE.getConexion().prepareStatement(codigoSQL);
             consulta.setString(1, correo);
             consulta.setString(2, contraseña);

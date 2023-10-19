@@ -15,8 +15,8 @@ public class Administrador extends Trabajador {
     public Object[] registrarNuevo() {
         Object[] filas = {
             this.codigo,
-            this.getNombre(),
-            this.getApellido(),
+            this.getDNI(),
+            this.getCorreo(),
             this.getUsuario(),
             this.getContraseña()
         };

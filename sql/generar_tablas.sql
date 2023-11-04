@@ -1,8 +1,9 @@
+
 create table Cliente(
 	ClienteID int,
     
     Consignatario varchar(100),
-	RUC int,
+	RUC bigint,
     Propietario varchar(250),
 	Contacto varchar(20),
     Direccion varchar(100),
@@ -186,28 +187,24 @@ create table DetalleNave(
 
 -- tabla de generacion de orden liquidación
 create table Orden(
-	OrdenID varchar(11),--formato 0000-2023
+	OrdenID varchar(11),-- formato 0000-2023
 	ClienteID int,
-    -- ruc int not null,
     Estado varchar(10),
     Canal varchar(50),
 	NaveID int,
 	AlmacenID int,
-	--Operacion varchar(20), -- importacion o exportacion
 	    	
 	primary key(OrdenID),
     foreign key (ClienteID) references Cliente(ClienteID),
 	foreign key (AlmacenID) references Almacen(AlmacenID),
 	foreign key (NaveID) references Nave(NaveID)
 
-	-- saldos de la empresa y el cliente
 );
 
 create table infoSunat(
-	infoSunatID int,
+	DAM varchar(25),	
 	OrdenID varchar(11),
 
-	DAM varchar(20),
 	FOB decimal(12,5),
 	FLETE decimal(12,5),
 	seguro decimal(12,5),
@@ -218,26 +215,28 @@ create table infoSunat(
 );
 
 create table PagoCliente(
-	pagoID int identity(1,1), 
+	pagoID int, 
 	OrdenID varchar(11),
 	
 	Concepto varchar(256) not null,
-	costoSol int null,
-	costoDolar int null,
-	tipoCambio int,
+	costoSol decimal(18,5) null,
+	costoDolar decimal(18,5) null,
+	tipoCambio decimal(18,5),
+	TipoMoneda varchar(20),
 
 	primary key (PagoID),
 	foreign key (OrdenID) references Orden(OrdenID)
 );
 
 create table PagoAgencia( --posible tabla sin PK relacion de pagos
-	pagoID int identity(1,1), 
+	pagoID int, 
 	OrdenID varchar(11),
 
 	Concepto varchar(256) not null,	
-	costoSol int null,
-	costoDolar int null,
-	tipoCambio int,
+	costoSol decimal(18,5) null,
+	costoDolar decimal(18,5) null,
+	tipoCambio decimal(18,5),
+	TipoMoneda varchar(20),
 
 	primary key (PagoID),
 	foreign key (OrdenID) references Orden(OrdenID)

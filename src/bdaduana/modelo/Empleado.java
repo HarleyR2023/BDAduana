@@ -14,7 +14,6 @@ public class Empleado extends Trabajador {
     
     public Object[] registrarNuevo() {
         Object[] filas = {
-            this.codigo,
             this.getDNI(),
             this.getCorreo(),
             this.getUsuario(),

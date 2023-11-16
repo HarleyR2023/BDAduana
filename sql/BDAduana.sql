@@ -1,84 +1,97 @@
-use master;
-
-go;
-
-if exists (select * from sysdatabases where name = 'BDAduana')
-	drop database BDAduana;
-go;
-
 create database BDAduana;
 
 use BDAduana;
 
--- Tablas de Cliente
-
-create table ClienteNacional(
-	RUC int not null,
-	Consignatorio varchar(250) not null,
-	Propietario varchar(250) not null,
-	Contacto varchar(20),
-
-	primary key (RUC)
-);
-
-create table ClienteExtranjero(
-	CodigoExtranjero int not null,
-	Consignatorio varchar(250) not null,
-	Propietario varchar(250) not null,
-	Contacto varchar(20),
-	Pais varchar(20),
-
-	primary key (CodigoExtranjero)
-);
-
 create table Cliente(
-	CodigoRUC int not null,
-	RUC int,
-	CodigoExtranjero int,
-	Estado varchar(50),
-
-	primary key (CodigoRUC),
-	foreign key (RUC) references ClienteNacional(RUC),
-	foreign key (CodigoExtranjero) references ClienteExtranjero(CodigoExtranjero)
+	ClienteID int,
+    
+    Consignatario varchar(100),
+	RUC bigint,
+    Propietario varchar(250),
+    Direccion varchar(100),
+    TipoCliente varchar(50),-- persona física o una entidad comercial
+    EstadoCuenta varchar(50), -- si existe una orden no concluida
+    Web varchar(100),
+    Correo varchar(100),
+    Telefono varchar(9),
+    EstadoPublico varchar(50), -- deudas o problemas con la sunat
+        
+    primary key(ClienteID)
 );
 
--- Tablas de Usuarios
+create table PaisCliente(
+	PaisID int,
 
-create table Empleado(
-	EmpleadoID int identity not null,
-	Usuario varchar(100),
-	Correo varchar(50),
-	DNI varchar(8),
-	Contraseña varchar(50),
-
-	primary key (EmpleadoID)
+    Pais varchar(50),
+    CodigoTelefono varchar(10),
+    Region varchar(50),
+    
+    primary key(PaisID)
 );
 
-create table Administrador(
-	AdminID int not null,
-	Usuario varchar(100),
-	Correo varchar(50),
-	DNI varchar(8),
-	Contraseña varchar(50),
+create table OrigenCliente(
+	OrigenID int,
+	PaisID int,
 
-	primary key (AdminID)
+	Origen varchar(50), -- nacional o extranjero
+
+	primary key(OrigenID)
 );
 
--- Tablas de Control
+create table Region(
+	RegionID int,
+	ClienteID int,
+    PaisID int,
+	OrigenID int,
 
-create table DetalleEmpleado(
-	EmpleadoID int,
-	Departamento varchar(50),
-	Direccion varchar(100),
-	Salario decimal(10, 8),
-	Cargo varchar(20),
+    Region varchar(50),
+    Direccion varchar(100),
+        
+    primary key(RegionID)	
+);
+
+ create table Administrador(
+	 AdminID int not null,
+	 nombre varchar(100),
+	 apellidoPaterno varchar(50),
+	 apellidoMaterno varchar(50),
+	 correo varchar(50),
+	 usuario varchar(50),
+	 contraseña varchar(50),
+     estado varchar(20),
+	 dni varchar(8),
+
+	 primary key(AdminID)
+);
+
+ create table Empleado(
+	 EmpleadoID int not null,
+	 nombre varchar(100),
+	 apellidoPaterno varchar(50),
+	 apellidoMaterno varchar(50),
+	 correo varchar(50),	
+	 usuario varchar(50),
+	 contraseña varchar(50),
+     estado varchar(20),
+	 dni varchar(8),
+
+	 primary key(EmpleadoID)	 
+);
+
+ create table DetalleEmpleado(
+	
+	EmpleadoID int, 
+
+	departamento varchar(50),
+	direccion varchar(100), 
+	salario decimal(10,8),
+	cargo varchar(20),
 	DNI int,
-	Estado varchar(20),
-	CodigoMaestro int,
+	estado varchar(20),
+	codigoMaestro int -- codigo para la eliminacion y modificacion de registros
+ );
 
-	foreign key (EmpleadoID) references Empleado(EmpleadoID)
-);
-
+-- tabla control de trabajadores
 create table ReporteEmpleado(
 	ReporteID int,
 	AdminID int,
@@ -90,38 +103,38 @@ create table ReporteEmpleado(
 	Descripcion varchar(100),
 	CategoriaReporte varchar(20),
 
-	primary key (ReporteID),
-	foreign key (AdminID) references Administrador(AdminID),
-	foreign key (EmpleadoID) references Empleado(EmpleadoID)
+	primary key (ReporteID)
 );
 
--- Tablas de Empresa
+-- tabla de tareas que maneja la empresa
+create table Tareas( -- la tabla puede ser cada tarea que salga en la empresa no solo tareas comunes
+	TareasID int,
 
-create table Tareas(
-	TareaID int not null,
-	Nombre varchar(50),
-	Descripcion varchar(100),
-	CodigoTarea varchar(5),
+	Tarea varchar(20),
+	CodigoTarea varchar(5), -- abreviacion
 	Prioridad varchar(20),
+	Descripcion varchar(100),
 
-	primary key (TareaID)
+	primary key (tareasID)
 );
 
+-- tabla que recoje las operaciones asignadas a los trabajadores
 create table Operacion(
-	OperacionID int not null,
-	EmpleadoID int,
-	TareaID int,
+	OperacionID int,
+	EmpleadoID int, -- responsable de la tarea
+	TareasID int,
 
-	primary key (OperacionID),
-	foreign key (EmpleadoID) references Empleado(EmpleadoID),
-	foreign key (TareaID) references Tareas(TareaID)
+	EstadoTarea varchar(20),
+	
+	primary key(OperacionID)
 );
 
-create table Almacen(
-	AlmacenID int not null,
-	Nombre varchar(100),
+create table Almacen( -- 
+	AlmacenID int,
+
+	NombreAlmacen varchar(50),
 	Cantidad int,
-	Direccion varchar(200),
+	Direccion varchar(100),
 	Telefono int,
 	Correo varchar(50),
 	EstadoAlmacen varchar(20),
@@ -129,21 +142,24 @@ create table Almacen(
 	primary key (AlmacenID)
 );
 
+-- maritimo y aereo tiene otro codigo
 create table Nave(
-	NaveID int,
-	Nombre varchar(50),
+	naveID int,
+
+	NombreNave varchar(50),
 	Propietario varchar(50),
+	NumRegistro int,
 	Capacidad int,
 	EstadoNave varchar(20),
 
-	primary key (NaveID)
+	primary key(naveID)
 );
 
 create table TipoNave(
 	TipoNaveID int,
 	Tipo varchar(20),
 	CodigoNave varchar(10),
-	Descripcion varchar(100)
+	Descripcion varchar(100),
 
 	primary key(TipoNaveID)
 );
@@ -152,68 +168,62 @@ create table DetalleNave(
 	NaveID int,
 	TipoNaveID int,
 
-	RutaOrigen varchar(50),
-	RutaSalida varchar(50),
-	RutaEntrada varchar(50),
-	FechaSalida date,
-	FechaEntrada date,
+	Modelo varchar(50),
+	rutaOrigen varchar(50),
+	rutaSalida varchar(50),
+	rutaEntrada varchar(50),
+	fechaSalida date,
+	fechaEntrada date
+);
 
-	foreign key (NaveID) references Nave(NaveID),
-	foreign key (TipoNaveID) references TipoNave(TipoNaveID)
-)
-
--- Tablas de Liquidaci�n
-
+-- tabla de generacion de orden liquidación
 create table Orden(
-	OrdenID varchar(11) not null, -- Formato: 0000-2023
-	CodigoRUC int not null,
-	Estado varchar(10),
-	Canal varchar(50),
+	OrdenID varchar(11),-- formato 0000-2023
+	ClienteID int,
+    Estado varchar(10),
+    Canal varchar(50),
 	NaveID int,
 	AlmacenID int,
-
-	primary key (OrdenID),
-	foreign key (CodigoRUC) references Cliente(CodigoRUC),
-	foreign key (NaveID) references Nave(NaveID)
+	    	
+	primary key(OrdenID)
 );
 
-create table InfoSunat(
-	NumeroDAM varchar(20),
-	OrdenID varchar(11),
-	
+create table infoSunat(
+	DAM varchar(25),	
+	OrdenID varchar(11) not null unique,
+
 	FOB decimal(12,5),
 	FLETE decimal(12,5),
-	Seguro decimal(12,5),
+	seguro decimal(12,5),
 	CIF decimal(12,5),
 
-	primary key (NumeroDAM),
-	foreign key (OrdenID) references Orden(OrdenID)
+	primary key(DAM)
 );
 
-create table PagoCliente( --
-	PagoID int identity(1,1), 
+create table PagoCliente(
+	pagoID int, 
 	OrdenID varchar(11),
 	
 	Concepto varchar(256) not null,
-	CostoSol int null,
-	CostoDolar int null,
-	TipoCambio int,
+	costoSol decimal(18,5) null,
+	costoDolar decimal(18,5) null,
+	tipoCambio decimal(18,5),
+	TipoMoneda varchar(20),
 
-	primary key (PagoID),
-	foreign key (OrdenID) references Orden(OrdenID)
+	primary key (PagoID)
 );
 
 create table PagoAgencia(
-	PagoID int identity(1,1), 
+	pagoID int, 
 	OrdenID varchar(11),
 
 	Concepto varchar(256) not null,	
-	CostoSol int null,
-	CostoDolar int null,
-	TipoCambio int,
+	costoSol decimal(18,5) null,
+	costoDolar decimal(18,5) null,
+	tipoCambio decimal(18,5),
+	TipoMoneda varchar(20),
 
-	primary key (PagoID),
-	foreign key (OrdenID) references Orden(OrdenID)
+	primary key (PagoID)
 );
 
 create table Deposito(
@@ -221,82 +231,91 @@ create table Deposito(
 	OrdenID varchar(11),
 
 	NumOperacion int not null,
-	NombreOperacion varchar(250) not null,
-	Fecha date not null,
 	Banco varchar(20),
+	NombreOperacion varchar(256) not null, -- nombre de la ope no existe
+	Fecha date not null,
 
-	CostoSol int,
-	CostoDolar int,
-	TipoCambio int,
+	costoSol int null,
+	costoDolar int null,	
+	tipoCambio int null,
 
-	primary key (DepositoID),
-	foreign key (OrdenID) references Orden(OrdenID)
+	primary key (depositoID)
 );
 
+-- 
 create table TipoCarga(
-	TipoCargaID int,
+	CodigoCarga int,
 	CargaID int,
 
-	Operacion varchar(20),
-	CodigoOperacion varchar(10),
-	-- varchar(100)
+	Operacion varchar(20), -- importacion exportacion
+	-- CodigoOperacion varchar(10),
 
-	primary key(TipoCargaID),
-)
+	primary key(CodigoCarga)
+);
 
 create table Carga(
 	CargaID int,
 	OrdenID varchar(11),
-	TipoCargaID int,
+	CodigoCarga int,
 
 	Peso decimal(10,5),
 	Bultos int,
 	CargaSuelta int,
 
-	primary key(CargaID),
-	foreign key(OrdenID) references Orden(OrdenID),
-	foreign key(TipoCargaID) references TipoCarga(TipoCargaID)
-)
-
--- Tablas de Operarios
+	primary key(CargaID)
+);
 
 create table OperarioExterno(
 	OperarioID int,
 
-	Nombre varchar(200),
-	Correo varchar(50),	
-	Usuario varchar(50),
-	Contrase�a varchar(50),
+	nombre varchar(100),
+	apellidoPaterno varchar(50),
+	apellidoMaterno varchar(50),
+	correo varchar(50),	
+	usuario varchar(50),
+	contraseña varchar(50),
+    estado varchar(20),
+    dni varchar(8),
 
 	primary key(OperarioID)
-)
+);
 
 create table DetalleOperario(
 	OperarioID int,
 
-	Direccion varchar(100), 
-	Salario decimal(10,8),
-	Cargo varchar(20),
+	direccion varchar(100), 
+	salario decimal(10,8),
+	cargo varchar(20),
 	DNI int,
-	Estado varchar(20),
-	CodigoMaestro int, -- codigo para la eliminacion y modificacion de registros
+	codigoMaestro int -- codigo para la eliminacion y modificacion de registros
+);
 
-	foreign key(OperarioID) references OperarioExterno(OperarioID)
-)
+create table Sede(
+	SedeID int,
+    Director varchar(20),
+    NombreSede varchar(50),
+    ruc int,
+    direccion varchar(100),
+    Correo varchar(50),
+    TipoSede varchar(30), -- oficina principal/apoyo/registro, sucursal, centro_distribución
+    Telefono int,
+    Region int,
+    EstadoSede varchar(20),
+    
+    primary key(SedeID)
+);
 
 create table RegistroOrden(
-	RegistroID int identity(1,1),
+	RegistroID int,
 	OrdenID varchar(11),
 	EmpleadoID int,
 	OperarioID int,
+	SedeID int,
 
 	Estado varchar(20),		
 
-	primary key (RegistroID),
-	foreign key (OrdenID) references Orden(OrdenID),
-	foreign key (EmpleadoID) references Empleado(EmpleadoID),
-	foreign key (OperarioID) references OperarioExterno (OperarioID)
-)
+	primary key (RegistroID)
+);
 
 create table PagoOperario(
 	PagoOperID int,
@@ -308,8 +327,89 @@ create table PagoOperario(
 	Banco varchar(10),
 	NumOperacion int,
 
-	primary key (PagoOperID),
-	foreign key (OperarioID) references OperarioExterno(OperarioID),
-	foreign key (AdminID) references Administrador(AdminID)
-)
-go
+	primary key (PagoOperID)
+);
+
+-- FK de la tabla OrigenCliente
+alter table OrigenCliente add
+foreign key (PaisID) references PaisCliente(PaisID);
+
+-- FK de la tabla PagoOperario
+alter table PagoOperario add
+foreign key (OperarioID) references OperarioExterno(OperarioID);
+alter table PagoOperario add
+foreign key (AdminID) references Administrador(AdminID);
+
+-- FK de la tabla Region
+alter table Region add
+foreign key(ClienteID) references Cliente(ClienteID);
+alter table Region add
+foreign key(PaisID) references PaisCliente(PaisID);
+alter table Region add
+foreign key(OrigenID) references OrigenCliente(OrigenID);
+
+-- FK de la tabla DetalleEmpleado
+alter table DetalleEmpleado add
+ foreign key (EmpleadoID) references Empleado(EmpleadoID);
+
+-- FK de la tabla ReporteEmpleado
+alter table ReporteEmpleado add
+foreign key (AdminID) references Administrador(AdminID);
+alter table ReporteEmpleado add
+foreign key (EmpleadoID) references Empleado(EmpleadoID);
+
+-- FK de la tabla Operacion
+alter table Operacion add
+foreign key (EmpleadoID) references Empleado(EmpleadoID);
+alter table Operacion add
+foreign key (TareasID) references Tareas(TareasID);
+
+-- FK de la tabla DetalleNave
+alter table DetalleNave add
+foreign key (NaveID) references Nave (NaveID);
+alter table DetalleNave add
+foreign key (TipoNaveID) references TipoNave (TipoNaveID);
+
+-- Fk de la tabla Orden
+alter table Orden add
+foreign key (ClienteID) references Cliente(ClienteID);
+alter table Orden add
+foreign key (AlmacenID) references Almacen(AlmacenID);
+alter table Orden add
+foreign key (NaveID) references Nave(NaveID);
+
+-- FK de la tabla infoSunat
+alter table infoSunat add
+foreign key (OrdenID) references Orden(OrdenID);
+
+-- FK de la tabla PagoCliente
+alter table PagoCliente add
+foreign key (OrdenID) references Orden(OrdenID);
+
+-- FK de la tabla PagoAgencia
+alter table PagoAgencia add
+foreign key (OrdenID) references Orden(OrdenID);
+
+-- FK de la tabla Deposito
+alter table Deposito add
+foreign key (OrdenID) references Orden(OrdenID);
+
+-- FK de la tabla Carga
+alter table Carga add
+foreign key(OrdenID) references Orden(OrdenID);
+alter table Carga add
+foreign key(CodigoCarga) references TipoCarga(CodigoCarga);
+
+-- FK de la tabla DetalleOperario
+alter table DetalleOperario add
+foreign key(OperarioID) references OperarioExterno(OperarioID);
+
+-- FK de la tabla RegistroOrden
+alter table RegistroOrden add
+foreign key (OrdenID) references Orden(OrdenID);
+alter table RegistroOrden add
+foreign key (EmpleadoID) references Empleado(EmpleadoID);
+alter table RegistroOrden add
+foreign key (OperarioID) references OperarioExterno (OperarioID);
+alter table RegistroOrden add
+foreign key (SedeID) references Sede(SedeID);
